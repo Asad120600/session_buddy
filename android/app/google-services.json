@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "496802628827",
+    "project_id": "session-buddy-79d6e",
+    "storage_bucket": "session-buddy-79d6e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:496802628827:android:973d9ab7b3df26f49a38fe",
+        "android_client_info": {
+          "package_name": "com.session.buddy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAarsskcs-veBfJg7b7Ff8xBfaDA2eebc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
