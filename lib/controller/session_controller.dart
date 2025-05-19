@@ -13,10 +13,13 @@ class SessionController extends GetxController {
   var selectedDateTime = DateTime.now().obs;
   var isLoading = false.obs;
 
-  // Firebase Firestore instance
+  // Firestore instance
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Clear all fields
+  // Constants
+  static const int maxDosage = 50;
+
+  // Clear fields
   void clearFields() {
     strainName.value = '';
     dosage.value = 0.0;
@@ -26,66 +29,26 @@ class SessionController extends GetxController {
     selectedDateTime.value = DateTime.now();
   }
 
-  // Calculate buzz score
+  // Calculate buzz score (1–10)
   int calculateBuzzScore(double dosage, String method) {
     int baseScore = (dosage * (method.toLowerCase() == 'edible' ? 2 : 1)).toInt();
     return baseScore.clamp(1, 10);
   }
 
-  // Get buzz description
+  // Calculate buzz percentage (for CircularProgress)
+  double calculateBuzzPercentage(double dosage, String method) {
+    double weighted = dosage * (method.toLowerCase() == 'edible' ? 2 : 1);
+    return (weighted / maxDosage).clamp(0.0, 1.0) * 100;
+  }
+
+  // Buzz description
   String getBuzzDescription(int score) {
-    if (score <= 3) {
-      return "Light buzz, feeling relaxed.";
-    } else if (score <= 6) {
-      return "Nice buzz, feeling good.";
-    } else {
-      return "Heavy buzz, time to chill.";
-    }
+    if (score <= 3) return "Light buzz, feeling relaxed.";
+    if (score <= 6) return "Nice buzz, feeling good.";
+    return "Heavy buzz, time to chill.";
   }
 
-  // Store session in Firebase
-  Future<void> saveSession(String userId) async {
-    try {
-      isLoading.value = true;
-
-      // Calculate buzz score and description
-      buzzScore.value = calculateBuzzScore(dosage.value, consumptionMethod.value);
-      buzzDescription.value = getBuzzDescription(buzzScore.value);
-
-      // Create session model
-      SessionModel session = SessionModel(
-        userId: userId, // You might want to get this from your auth system
-        strainName: strainName.value,
-        dosage: dosage.value,
-        consumptionMethod: consumptionMethod.value,
-        timestamp: selectedDateTime.value,
-        buzzScore: buzzScore.value,
-        buzzDescription: buzzDescription.value,
-      );
-
-      // Save to Firebase
-      await _firestore.collection('sessions').add(session.toFirestore());
-
-      // Navigate to result screen
-      Get.to(() => BuzzScoreResultScreen(
-            buzzScore: buzzScore.value,
-            buzzDescription: buzzDescription.value,
-          ));
-
-      // Clear fields after successful save
-      clearFields();
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to save session: $e',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  // Validate inputs
+  // Validate form inputs
   bool validateInputs() {
     if (strainName.value.isEmpty) {
       Get.snackbar('Error', 'Please enter strain name');
@@ -100,5 +63,45 @@ class SessionController extends GetxController {
       return false;
     }
     return true;
+  }
+
+  // Save session and navigate to result
+  Future<void> saveSession(String userId) async {
+    if (!validateInputs()) return;
+
+    try {
+      isLoading.value = true;
+
+      buzzScore.value = calculateBuzzScore(dosage.value, consumptionMethod.value);
+      buzzDescription.value = getBuzzDescription(buzzScore.value);
+      double progress = calculateBuzzPercentage(dosage.value, consumptionMethod.value);
+
+      // Create model
+      SessionModel session = SessionModel(
+        userId: userId,
+        strainName: strainName.value,
+        dosage: dosage.value,
+        consumptionMethod: consumptionMethod.value,
+        timestamp: selectedDateTime.value,
+        buzzScore: buzzScore.value,
+        buzzDescription: buzzDescription.value,
+      );
+
+      await _firestore.collection('sessions').add(session.toFirestore());
+
+      // Navigate with actual progress value
+      Get.to(() => BuzzScoreResultScreen(
+            buzzScore: buzzScore.value,
+            buzzDescription: buzzDescription.value,
+            progressPercentage: progress,
+          ));
+
+      clearFields();
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to save session: $e',
+          snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

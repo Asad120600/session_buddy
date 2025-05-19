@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomDropdown extends StatefulWidget {
   final String hintText;
@@ -22,17 +23,13 @@ class _CustomDropdownState extends State<CustomDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          isFocused = true;
-        });
-      },
+      onTap: () => setState(() => isFocused = true),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 25),
+        padding: EdgeInsets.symmetric(horizontal: 25.w),
         decoration: BoxDecoration(
           border: Border.all(
             color: isFocused
@@ -40,7 +37,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
                 : theme.inputDecorationTheme.border?.borderSide.color ??
                     colorScheme.outline,
           ),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.r),
         ),
         child: DropdownButtonHideUnderline(
           child: DropdownButton<String>(
@@ -48,25 +45,21 @@ class _CustomDropdownState extends State<CustomDropdown> {
               widget.hintText,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.secondary,
+                fontSize: 14.sp,
               ),
             ),
             isExpanded: true,
-            icon: Icon(Icons.arrow_drop_down, color: theme.iconTheme.color),
+            icon: Icon(Icons.arrow_drop_down, size: 24.sp, color: theme.iconTheme.color),
             value: selectedValue,
             items: widget.items.map((String value) {
               return DropdownMenuItem<String>(
                 value: value,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(120),
-                    color: Colors.transparent,
-                  ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
                   child: Text(
                     value,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

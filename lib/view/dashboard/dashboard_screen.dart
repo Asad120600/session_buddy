@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../utils/circular_progress.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -12,7 +13,7 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  double progressPercentage = 0;
+  int buzzScore = 0;
   List<Map<String, dynamic>> recentSessions = [];
 
   @override
@@ -29,24 +30,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
         .collection('sessions')
         .where('user_id', isEqualTo: user.uid)
         .orderBy('timestamp', descending: true)
-        .limit(3)
-        .get();
+        .get(); // removed .limit(3)
 
     if (query.docs.isNotEmpty) {
       final sessions = query.docs.map((doc) => doc.data()).toList();
 
       final latestSession = sessions.first;
       final int dosage = latestSession['dosage'] ?? 0;
-      final String method =
-          latestSession['consumption_method']?.toString().toLowerCase() ?? '';
+      final String method = latestSession['consumption_method']?.toString().toLowerCase() ?? '';
 
       const int maxDosage = 50;
       int weightedDosage = dosage * (method == 'edible' ? 2 : 1);
-      double percentage = (weightedDosage / maxDosage).clamp(0.0, 1.0) * 100;
+      int score = ((weightedDosage / maxDosage) * 10).round().clamp(1, 10);
 
       setState(() {
         recentSessions = sessions;
-        progressPercentage = percentage;
+        buzzScore = score;
       });
     }
   }
@@ -59,31 +58,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             Center(
               child: Column(
                 children: [
                   CircularProgress(
-                    percentage: progressPercentage,
+                    percentage: buzzScore.toDouble(),
                     showDescription: true,
+                    isScore: true,
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             Text(
               "Recent Sessions",
               style: theme.textTheme.titleLarge?.copyWith(
-                fontSize: 18,
+                fontSize: 18.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             Expanded(
               child: recentSessions.isEmpty
                   ? const Center(child: Text("No sessions found"))
@@ -98,22 +98,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ?.toString()
                                 .toLowerCase() ??
                             '';
-
-                        const int maxDosage = 50;
-                        int weightedDosage =
-                            dosage * (method == 'edible' ? 2 : 1);
-                        double percentage =
-                            (weightedDosage / maxDosage).clamp(0.0, 1.0) * 100;
+                        final int buzzScoreLocal = session['buzz_score'] ?? 0;
 
                         return Padding(
-                          padding: const EdgeInsets.only(bottom: 12.0),
+                          padding: EdgeInsets.only(bottom: 12.h),
                           child: Container(
-                            padding: const EdgeInsets.all(12),
+                            padding: EdgeInsets.all(12.r),
                             decoration: BoxDecoration(
-                              color:
-                                  theme.cardTheme.color ?? colorScheme.surface,
+                              color: theme.cardTheme.color ?? colorScheme.surface,
                               border: Border.all(color: colorScheme.primary),
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(10.r),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,40 +115,43 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 Text(
                                   session['strain_name'] ?? '',
                                   style: theme.textTheme.titleMedium?.copyWith(
-                                    fontSize: 16,
+                                    fontSize: 16.sp,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                const SizedBox(height: 5),
+                                SizedBox(height: 5.h),
                                 Text(
-                                  "Dosage: ${dosage} mg",
+                                  session['consumption_method'] ?? '',
                                   style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontSize: 14,
+                                    fontSize: 14.sp,
+                                  ),
+                                ),
+                                SizedBox(height: 5.h),
+                                Text(
+                                  "Dosage: $dosage mg",
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    fontSize: 14.sp,
                                     color: colorScheme.secondary,
                                   ),
                                 ),
-                                const SizedBox(height: 5),
+                                SizedBox(height: 5.h),
                                 Text(
-                                  "Buzz Score: ${percentage.toStringAsFixed(1)}%",
+                                  "Buzz Score: $buzzScoreLocal / 10",
                                   style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontSize: 14,
+                                    fontSize: 14.sp,
                                     color: colorScheme.primary,
                                   ),
                                 ),
-                                const SizedBox(height: 5),
+                                SizedBox(height: 5.h),
                                 Row(
                                   children: [
-                                    Icon(
-                                      Icons.access_time,
-                                      size: 16,
-                                      color: colorScheme.primary,
-                                    ),
-                                    const SizedBox(width: 5),
+                                    Icon(Icons.access_time,
+                                        size: 16.sp, color: colorScheme.primary),
+                                    SizedBox(width: 5.w),
                                     Text(
                                       "${DateFormat('hh:mm a').format(timestamp)} • ${DateFormat('dd/MM/yyyy').format(timestamp)}",
-                                      style:
-                                          theme.textTheme.bodyMedium?.copyWith(
-                                        fontSize: 14,
+                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                        fontSize: 14.sp,
                                       ),
                                     ),
                                   ],

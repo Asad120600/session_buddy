@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:session_buddy/controller/navigation_controller.dart';
 import 'package:session_buddy/controller/theme_controller.dart';
 import 'package:session_buddy/view/dashboard/dashboard_screen.dart';
@@ -30,9 +31,9 @@ class MainScreen extends StatelessWidget {
     "Dashboard",
     "",
     "Subscription",
+    "",
   ];
 
-  // Method to show logout confirmation dialog
   void _showLogoutConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -42,32 +43,38 @@ class MainScreen extends StatelessWidget {
           title: Text(
             'Logout Confirmation',
             style: theme.textTheme.titleLarge?.copyWith(
-              fontSize: 18,
+              fontSize: 18.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
           content: Text(
             'Are you sure you want to logout?',
-            style: theme.textTheme.bodyMedium,
+            style: theme.textTheme.bodyMedium?.copyWith(fontSize: 14.sp),
           ),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
               child: Text(
                 'No',
-                style: TextStyle(color: theme.colorScheme.secondary),
+                style: TextStyle(
+                  color: theme.colorScheme.secondary,
+                  fontSize: 14.sp,
+                ),
               ),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                authController.logout(); // Perform logout
+                Navigator.of(context).pop();
+                authController.logout();
               },
               child: Text(
                 'Yes',
-                style: TextStyle(color: theme.colorScheme.primary),
+                style: TextStyle(
+                  color: theme.colorScheme.primary,
+                  fontSize: 14.sp,
+                ),
               ),
             ),
           ],
@@ -90,19 +97,19 @@ class MainScreen extends StatelessWidget {
             title: Text(
               titles[navigationController.selectedIndex.value],
               style: theme.textTheme.titleMedium?.copyWith(
-                fontSize: 18,
+                fontSize: 18.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
             actions: [
               IconButton(
                 onPressed: () {
-                  _showLogoutConfirmationDialog(
-                      context); // Show dialog on press
+                  _showLogoutConfirmationDialog(context);
                 },
                 icon: Icon(
                   Icons.logout,
                   color: theme.iconTheme.color,
+                  size: 22.sp,
                 ),
               ),
             ],
@@ -119,6 +126,8 @@ class MainScreen extends StatelessWidget {
               navigationController.changeIndex(index);
             },
             backgroundColor: theme.scaffoldBackgroundColor,
+            selectedFontSize: 12.sp,
+            unselectedFontSize: 12.sp,
             items: const [
               BottomNavigationBarItem(
                   icon: Icon(Icons.home_outlined), label: "Home"),

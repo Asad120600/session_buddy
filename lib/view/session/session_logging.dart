@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:session_buddy/utils/button.dart';
 import 'package:session_buddy/utils/d_t_picker.dart';
 import 'package:session_buddy/utils/dosage_input_field.dart';
@@ -21,11 +22,14 @@ class _SessionLoggingScreenState extends State<SessionLoggingScreen> {
   final List<String> consumptionMethods = ["Smoke", "Vape", "Edible"];
   String? selectedMethod;
 
+  DateTime selectedDateTime = DateTime.now();
+
   Map<String, dynamic> calculateBuzzData(int dosage, String method) {
     const int maxDosage = 50;
     int weightedDosage = dosage * (method.toLowerCase() == 'edible' ? 2 : 1);
 
-    int buzzScore = weightedDosage.clamp(1, 10);
+    // Normalize buzz score to a 1–10 scale
+    int buzzScore = ((weightedDosage / maxDosage) * 10).round().clamp(1, 10);
     double percentage = (weightedDosage / maxDosage).clamp(0.0, 1.0) * 100;
 
     return {
@@ -72,7 +76,7 @@ class _SessionLoggingScreenState extends State<SessionLoggingScreen> {
         strainName: strain,
         dosage: dosage,
         method: method,
-        timestamp: DateTime.now(),
+        timestamp: selectedDateTime,
         buzzScore: buzzScore,
       );
 
@@ -103,6 +107,7 @@ class _SessionLoggingScreenState extends State<SessionLoggingScreen> {
           "Log a new session",
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
+            fontSize: 20.sp,
           ),
         ),
         centerTitle: true,
@@ -114,17 +119,19 @@ class _SessionLoggingScreenState extends State<SessionLoggingScreen> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 50.0),
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 50.h),
           child: Column(
             children: [
               CustomTextField(
-                  hintText: "Enter strain name", controller: strainController),
-              const SizedBox(height: 15),
+                hintText: "Enter strain name",
+                controller: strainController,
+              ),
+              SizedBox(height: 15.h),
               DosageInputField(
                 hintText: "Dosage",
                 controller: dosageController,
               ),
-              const SizedBox(height: 15),
+              SizedBox(height: 15.h),
               CustomDropdown(
                 hintText: "Consumption Method",
                 items: consumptionMethods,
@@ -134,14 +141,20 @@ class _SessionLoggingScreenState extends State<SessionLoggingScreen> {
                   });
                 },
               ),
-              const SizedBox(height: 15),
-              DateTimePicker(onDateTimeSelected: (dateTime) {}),
+              SizedBox(height: 15.h),
+              DateTimePicker(
+                onDateTimeSelected: (dateTime) {
+                  setState(() {
+                    selectedDateTime = dateTime;
+                  });
+                },
+              ),
             ],
           ),
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
         child: CustomButton(
           text: "SUBMIT",
           onPressed: handleSubmit,

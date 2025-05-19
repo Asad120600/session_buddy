@@ -1,50 +1,10 @@
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:session_buddy/utils/button.dart';
-// import 'package:session_buddy/utils/circular_progress.dart';
-// import 'package:session_buddy/view/session/session_logging.dart';
-
-// class HomeScreen extends StatelessWidget {
-//   const HomeScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final ThemeData theme = Theme.of(context);
-//     final ColorScheme colorScheme = theme.colorScheme;
-
-//     return Padding(
-//       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-//       child: Column(
-//         children: [
-//           const SizedBox(height: 30),
-//           Text(
-//             "BUZZ SCORE",
-//             style: theme.textTheme.headlineSmall?.copyWith(
-//               fontSize: 30,
-//               fontWeight: FontWeight.bold,
-//             ),
-//           ),
-//           const SizedBox(height: 65),
-//           CircularProgress(percentage: 50),
-//           const SizedBox(height: 70),
-//           CustomButton(
-//             text: "LOG A NEW SESSION",
-//             onPressed: () {
-//               Get.to(const SessionLoggingScreen());
-//             },
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:session_buddy/utils/button.dart';
 import 'package:session_buddy/utils/circular_progress.dart';
 import 'package:session_buddy/view/session/session_logging.dart';
 import 'package:session_buddy/services/session_service.dart';
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -54,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  double buzzPercentage = 0;
+  int buzzScore = 0;
 
   @override
   void initState() {
@@ -67,14 +27,15 @@ class _HomeScreenState extends State<HomeScreen> {
     if (session == null) return;
 
     final int dosage = session['dosage'] ?? 0;
-    final String method = session['consumption_method']?.toString().toLowerCase() ?? '';
+    final String method =
+        session['consumption_method']?.toString().toLowerCase() ?? '';
 
     const int maxDosage = 50;
     int weightedDosage = dosage * (method == 'edible' ? 2 : 1);
-    double percentage = (weightedDosage / maxDosage).clamp(0.0, 1.0) * 100;
+    int score = ((weightedDosage / maxDosage) * 10).round().clamp(1, 10);
 
     setState(() {
-      buzzPercentage = percentage;
+      buzzScore = score;
     });
   }
 
@@ -83,25 +44,24 @@ class _HomeScreenState extends State<HomeScreen> {
     final theme = Theme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
       child: Column(
         children: [
-          const SizedBox(height: 30),
+          SizedBox(height: 30.h),
           Text(
             "BUZZ SCORE",
             style: theme.textTheme.headlineSmall?.copyWith(
-              fontSize: 30,
+              fontSize: 30.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 65),
-          CircularProgress(percentage: buzzPercentage),
-          const SizedBox(height: 70),
+          SizedBox(height: 65.h),
+          CircularProgress(percentage: buzzScore.toDouble(), isScore: true),
+          SizedBox(height: 70.h),
           CustomButton(
             text: "LOG A NEW SESSION",
             onPressed: () {
               Get.to(const SessionLoggingScreen())?.then((_) {
-                // Reload after logging new session
                 loadLatestBuzz();
               });
             },

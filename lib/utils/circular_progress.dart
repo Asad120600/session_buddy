@@ -1,103 +1,36 @@
-// import 'package:flutter/material.dart';
-// import 'package:percent_indicator/circular_percent_indicator.dart';
-// import '../core/app_colors.dart';
-
-// class CircularProgress extends StatefulWidget {
-//   final double percentage;
-//   final bool showDescription; // Toggle for description
-
-//   const CircularProgress({
-//     super.key,
-//     required this.percentage,
-//     this.showDescription = false, // Default to true
-//   });
-
-//   @override
-//   State<CircularProgress> createState() => _CircularProgressState();
-// }
-
-// class _CircularProgressState extends State<CircularProgress> {
-//   String buzzDescription = "Moderate";
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       decoration: BoxDecoration(
-//         shape: BoxShape.circle,
-//         boxShadow: [
-//           BoxShadow(
-//             color: Colors.black.withOpacity(0.3),
-//             blurRadius: 20,
-//             spreadRadius: 5,
-//             offset: Offset(0, 5),
-//           ),
-//           BoxShadow(
-//             color: Colors.white,
-//             blurRadius: 10,
-//             spreadRadius: -5,
-//           ),
-//         ],
-//       ),
-//       child: CircularPercentIndicator(
-//         radius: 120.0,
-//         lineWidth: 28.0,
-//         percent: widget.percentage / 100,
-//         center: Column(
-//           mainAxisAlignment:
-//               MainAxisAlignment.center, // Ensures proper centering
-//           children: [
-//             Text(
-//               "${widget.percentage.toInt()}%",
-//               style: TextStyle(
-//                 fontSize: 55,
-//                 fontWeight: FontWeight.bold,
-//               ),
-//             ),
-//             if (widget.showDescription) // Show description if enabled
-//               Text(
-//                 buzzDescription,
-//                 style: TextStyle(
-//                   fontSize: 16,
-//                   fontWeight: FontWeight.bold,
-//                   color: AppColors.btnColor,
-//                 ),
-//               ),
-//           ],
-//         ),
-//         progressColor: AppColors.btnColor,
-//         backgroundColor: AppColors.lightGrey,
-//         circularStrokeCap: CircularStrokeCap.round,
-//         startAngle: 180, // Starts progress from the left
-//       ),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
-class CircularProgress extends StatefulWidget {
+class CircularProgress extends StatelessWidget {
   final double percentage;
-  final bool showDescription; // Toggle for description
+  final bool showDescription;
+  final bool isScore;
 
   const CircularProgress({
     super.key,
     required this.percentage,
-    this.showDescription = false, // Default to false
+    this.showDescription = false,
+    this.isScore = false,
   });
 
   @override
-  State<CircularProgress> createState() => _CircularProgressState();
-}
-
-class _CircularProgressState extends State<CircularProgress> {
-  String buzzDescription = "Moderate";
-
-  @override
   Widget build(BuildContext context) {
-    // Get theme data from context
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    // Optional description for buzz score
+    String buzzDescription = '';
+    if (isScore && showDescription) {
+      final int score = percentage.toInt();
+      if (score <= 3) {
+        buzzDescription = "Light buzz";
+      } else if (score <= 6) {
+        buzzDescription = "Nice buzz";
+      } else {
+        buzzDescription = "Heavy buzz";
+      }
+    }
 
     return Container(
       decoration: BoxDecoration(
@@ -105,37 +38,37 @@ class _CircularProgressState extends State<CircularProgress> {
         boxShadow: [
           BoxShadow(
             color: colorScheme.shadow.withOpacity(0.3),
-            blurRadius: 20,
-            spreadRadius: 5,
+            blurRadius: 20.r,
+            spreadRadius: 5.r,
             offset: const Offset(0, 5),
           ),
           BoxShadow(
-            color: colorScheme
-                .surface, // Using surface color for white-like shadow
-            blurRadius: 10,
-            spreadRadius: -5,
+            color: colorScheme.surface,
+            blurRadius: 10.r,
+            spreadRadius: -5.r,
           ),
         ],
       ),
       child: CircularPercentIndicator(
-        radius: 120.0,
-        lineWidth: 28.0,
-        percent: widget.percentage / 100,
+        radius: 120.r,
+        lineWidth: 28.r,
+        percent:
+            isScore ? (percentage / 10).clamp(0.0, 1.0) : (percentage / 100),
         center: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "${widget.percentage.toInt()}%",
+              isScore ? percentage.toInt().toString() : "${percentage.toInt()}",
               style: theme.textTheme.displayMedium?.copyWith(
-                fontSize: 55,
+                fontSize: 55.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            if (widget.showDescription)
+            if (showDescription)
               Text(
-                buzzDescription,
+                isScore ? buzzDescription : "Current buzz",
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  fontSize: 16,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
                   color: colorScheme.primary,
                 ),

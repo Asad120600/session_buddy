@@ -9,32 +9,51 @@ import 'package:session_buddy/view/main_screen.dart';
 class FirebaseService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Login function
   Future<void> login({required String email, required String password}) async {
     try {
+      if (email.trim().isEmpty || password.isEmpty) {
+        _showErrorSnackbar('Please enter both email and password.');
+        return;
+      }
+
       await _auth.signInWithEmailAndPassword(
-        email: email,
+        email: email.trim(),
         password: password,
       );
+
       _showSuccessSnackbar('Logged in successfully');
-      Get.to(MainScreen());
+      Get.offAll(() => MainScreen());
     } on FirebaseAuthException catch (e) {
       String message;
       switch (e.code) {
         case 'user-not-found':
-          message = 'No user found with this email.';
+          message = 'We couldn’t find an account with that email.';
           break;
         case 'wrong-password':
-          message = 'Incorrect password.';
+          message = 'The password you entered is incorrect.';
           break;
         case 'invalid-email':
-          message = 'Invalid email format.';
+          message = 'Please enter a valid email address.';
+          break;
+        case 'user-disabled':
+          message = 'This account has been disabled.';
+          break;
+        case 'too-many-requests':
+          message = 'Too many attempts. Please wait and try again.';
+          break;
+        case 'invalid-credential':
+        case 'invalid-verification-code':
+        case 'invalid-verification-id':
+          message =
+              'The credentials are incorrect or expired. Please try again.';
           break;
         default:
-          message = 'Login failed. Please try again.';
+          message =
+              'Login failed. Please check your credentials and try again.';
       }
       _showErrorSnackbar(message);
-      rethrow;
+    } catch (e) {
+      _showErrorSnackbar('Something went wrong. Please try again later.');
     }
   }
 

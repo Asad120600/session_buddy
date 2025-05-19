@@ -1,7 +1,8 @@
-import 'dart:math'; // ✅ Required for `exp()`
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:session_buddy/utils/dosage_input_field.dart';
 import '../../core/app_colors.dart';
 import '../../utils/premium_button.dart';
@@ -23,7 +24,6 @@ class _ThcCalculationState extends State<ThcCalculation> {
 
   final List<String> consumptionMethods = ["Smoke", "Vape", "Edible"];
 
-  /// Function to Calculate Estimated THC Blood Level
   void calculateThcLevel() {
     if (dosageController.text.isEmpty ||
         timeController.text.isEmpty ||
@@ -38,12 +38,10 @@ class _ThcCalculationState extends State<ThcCalculation> {
     double dosage = double.tryParse(dosageController.text) ?? 0;
     double timeElapsed = double.tryParse(timeController.text) ?? 0;
 
-    double absorptionRate =
-        selectedMethod == "Edible" ? 0.7 : 1.0; // From app logic
-    double thcLevel =
-        dosage * absorptionRate * exp(-0.03 * timeElapsed); // Exponential decay
+    double absorptionRate = selectedMethod == "Edible" ? 0.7 : 1.0;
+    double thcLevel = dosage * absorptionRate * exp(-0.03 * timeElapsed);
 
-    thcLevel = thcLevel.clamp(0.01, 5.0); // Clamp to realistic range
+    thcLevel = thcLevel.clamp(0.01, 5.0);
 
     setState(() {
       estimatedThcLevel = thcLevel;
@@ -55,33 +53,33 @@ class _ThcCalculationState extends State<ThcCalculation> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 30.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 IconButton(
-                  icon: Icon(Icons.diamond, color: AppColors.btnColor),
+                  icon: Icon(Icons.diamond, color: AppColors.btnColor, size: 24.sp),
                   onPressed: () {},
                 ),
-                const SizedBox(width: 80),
+                SizedBox(width: 80.w),
                 Text(
                   "Premium",
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
                     color: AppColors.text,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 25),
+            SizedBox(height: 25.h),
             DosageInputField(
               hintText: "Dosage",
               controller: dosageController,
             ),
-            const SizedBox(height: 15),
+            SizedBox(height: 15.h),
             CustomDropdown(
               hintText: "Consumption Method",
               items: consumptionMethods,
@@ -91,21 +89,21 @@ class _ThcCalculationState extends State<ThcCalculation> {
                 });
               },
             ),
-            const SizedBox(height: 15),
+            SizedBox(height: 15.h),
             CustomTextField(
               hintText: "Time since last session (hours)",
               controller: timeController,
             ),
-            const SizedBox(height: 25),
+            SizedBox(height: 25.h),
             PremiumButton(
               buttonText: "CALCULATE THC BLOOD LEVEL",
               onPressed: calculateThcLevel,
             ),
-            const SizedBox(height: 50),
+            SizedBox(height: 50.h),
             Center(
               child: RichText(
                 text: TextSpan(
-                  style: TextStyle(fontSize: 16, color: AppColors.text),
+                  style: TextStyle(fontSize: 16.sp, color: AppColors.text),
                   children: [
                     const TextSpan(text: "Estimated THC Level: "),
                     TextSpan(
@@ -113,6 +111,7 @@ class _ThcCalculationState extends State<ThcCalculation> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: AppColors.btnColor,
+                        fontSize: 16.sp,
                       ),
                     ),
                   ],

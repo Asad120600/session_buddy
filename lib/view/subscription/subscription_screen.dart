@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../utils/premium_button.dart';
 import '../thc/thc_calculation.dart';
 
@@ -14,15 +15,15 @@ class SubscriptionScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 30.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+              padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 20.h),
               decoration: BoxDecoration(
                 color: colorScheme.surfaceVariant,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(10.r),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -30,14 +31,14 @@ class SubscriptionScreen extends StatelessWidget {
                   Text(
                     "Subscription Status",
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      fontSize: 16,
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   Text(
                     "Free",
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      fontSize: 16,
+                      fontSize: 16.sp,
                       color: colorScheme.primary,
                       fontWeight: FontWeight.bold,
                     ),
@@ -45,11 +46,31 @@ class SubscriptionScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 30),
+            SizedBox(height: 30.h),
             PremiumButton(
               buttonText: "GET PREMIUM NOW",
               onPressed: () {
-                Get.to(const ThcCalculation());
+                Get.dialog(
+                  AlertDialog(
+                    title: const Text("Premium Feature"),
+                    content: const Text(
+                      "Payment method integration coming soon.\n\nYou can still try the THC calculation feature now.",
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Get.back(), // dismiss
+                        child: const Text("Cancel"),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Get.back(); // Close dialog
+                          Get.to(const ThcCalculation());
+                        },
+                        child: const Text("Try THC Calculation"),
+                      ),
+                    ],
+                  ),
+                );
               },
             ),
           ],

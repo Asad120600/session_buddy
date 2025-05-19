@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:session_buddy/utils/button.dart';
 import 'package:session_buddy/view/auth/login_screen.dart';
@@ -8,33 +9,24 @@ class ResetConfirmationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    final theme = Theme.of(context);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 50),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 50.h),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text("Reset Link Sent!", style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, fontSize: 28.sp)),
+            SizedBox(height: 20.h),
             Text(
-              "Reset Link Sent!",
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                fontSize: 28,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              "Check your email for a link to reset your password. Follow the instructions there to complete the process.",
+              "Check your email and follow the instructions to reset your password.",
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(fontSize: 16),
+              style: theme.textTheme.bodyMedium?.copyWith(fontSize: 16.sp),
             ),
-            const SizedBox(height: 40),
-            CustomButton(
-              text: "BACK TO LOGIN",
-              onPressed: () => Get.offAll(() => LoginScreen()),
-            ),
+            SizedBox(height: 40.h),
+            CustomButton(text: "BACK TO LOGIN", onPressed: () => Get.offAll(() => const LoginScreen())),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:session_buddy/utils/button.dart';
 import 'package:session_buddy/view/main_screen.dart';
 import '../../utils/circular_progress.dart';
@@ -31,28 +32,31 @@ class BuzzScoreResultScreen extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            const SizedBox(height: 40),
+            SizedBox(height: 40.h),
             Text(
               "BUZZ SCORE",
               style: theme.textTheme.headlineMedium?.copyWith(
-                fontSize: 35,
+                fontSize: 35.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 65),
-            CircularProgress(percentage: progressPercentage),
-            const SizedBox(height: 65),
+            SizedBox(height: 65.h),
+            CircularProgress(
+                percentage: buzzScore.toDouble(),
+                isScore: true,
+                showDescription: true),
+            SizedBox(height: 65.h),
             Text(
               buzzDescription,
               style: theme.textTheme.headlineSmall?.copyWith(
-                fontSize: 25,
+                fontSize: 25.sp,
                 fontWeight: FontWeight.bold,
                 color: colorScheme.primary,
               ),
               textAlign: TextAlign.center,
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 65, right: 35, left: 35),
+              padding: EdgeInsets.only(top: 65.h, right: 35.w, left: 35.w),
               child: CustomButton(
                 text: "Back To Home",
                 onPressed: () {

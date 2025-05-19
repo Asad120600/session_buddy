@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // ✅ Import this
 import 'package:get/get.dart';
 import 'package:session_buddy/firebase_options.dart';
 import 'package:session_buddy/theme.dart';
@@ -22,15 +23,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetX<ThemeController>(
-      builder: (themeController) {
-        return GetMaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Session Buddy',
-          themeMode: themeController.isDarkMode.value ? ThemeMode.dark : ThemeMode.light,
-          theme: lightMode,
-          darkTheme: darkMode,
-          home: _checkLoginStatus(),
+    return ScreenUtilInit(
+      designSize: const Size(375, 812), // iPhone X resolution base
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return GetX<ThemeController>(
+          builder: (themeController) {
+            return GetMaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'Session Buddy',
+              themeMode: themeController.isDarkMode.value
+                  ? ThemeMode.dark
+                  : ThemeMode.light,
+              theme: lightMode,
+              darkTheme: darkMode,
+              home: _checkLoginStatus(),
+            );
+          },
         );
       },
     );
@@ -38,6 +48,6 @@ class MyApp extends StatelessWidget {
 
   Widget _checkLoginStatus() {
     User? user = FirebaseAuth.instance.currentUser;
-    return user != null ?  MainScreen() :  LoginScreen();
+    return user != null ? MainScreen() : LoginScreen();
   }
 }
